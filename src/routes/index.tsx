@@ -23,8 +23,8 @@ function Home() {
             </span>
 
             <h1 className="mt-6 text-5xl font-black leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              We answer<br />
-              so you don't have to.
+              Nothing said<br />
+              gets past us.
             </h1>
 
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
