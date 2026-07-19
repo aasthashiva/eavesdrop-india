@@ -10,7 +10,7 @@ export function Nav() {
             <ShieldCheck className="h-5 w-5" strokeWidth={2.2} />
             <Phone className="absolute h-3 w-3 translate-x-[1px] translate-y-[2px]" strokeWidth={2.5} />
           </span>
-          <span className="text-lg font-bold tracking-tight text-foreground">SentryCall</span>
+          <span className="text-lg font-bold tracking-tight text-foreground">EavesDrop</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
