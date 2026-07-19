@@ -19,7 +19,7 @@ function Home() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
               </span>
-              AI-Powered Call Scam Detection
+              Live Call Threat Detection
             </span>
 
             <h1 className="mt-6 text-5xl font-black leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
@@ -28,7 +28,11 @@ function Home() {
             </h1>
 
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-              SentryCall listens, analyzes, and protects you from suspicious calls in real-time using advanced voice intelligence.
+              Scam calls work because they don't give you time to think. Once someone is on the line, panic and pressure take over, and by the time you'd normally reach out for help, it's already too late. Eavesdrop is built around that exact moment. As a call happens, it quietly checks the caller and calculates a live risk score, and if things look dangerous, it automatically alerts a trusted contact you've chosen in advance, so someone outside the call is looking out for you when you can't look out for yourself. 
+
+
+
+              This version is an early prototype: instead of connecting to real phone calls just yet, it lets you simulate one, you play the caller, and the system responds exactly as it would during an actual call. It's here so you can see and test how Eavesdrop thinks, before it's built into the real calling experience.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-6">
