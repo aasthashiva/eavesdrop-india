@@ -51,7 +51,7 @@ function HowItWorks() {
         <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-medium text-primary">
           How It Works
         </span>
-        <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+        <h1 className="mt-6 text-3xl font-black tracking-tight text-balance sm:text-4xl">
           We could just tell you to trust us. <br />We'd rather show you.
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
