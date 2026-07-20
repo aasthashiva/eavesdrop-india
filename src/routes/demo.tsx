@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Info, ShieldCheck, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Info, ShieldCheck, Lock, AlertTriangle, CheckCircle2, X } from "lucide-react";
 import { PhoneMockup, IncomingCallScreen } from "@/components/PhoneMockup";
+import { DemoEntryDialog, TRUSTED_CONTACT_DISPLAY, TRUSTED_CONTACT_E164 } from "@/components/DemoEntryDialog";
+import { ScamAlertDialog } from "@/components/ScamAlertDialog";
 import {
   MOCK_TRANSCRIPT,
   RISK_TARGET,
@@ -22,10 +24,41 @@ export const Route = createFileRoute("/demo")({
   component: DemoPage,
 });
 
+const RISK_ALERT_THRESHOLD = 70;
+const ANALYZE_ENDPOINT = "https://eavesdrop-backend.onrender.com/analyze";
+const SESSION_NAME_KEY = "sentrycall_demo_name";
+
+function computeInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function DemoPage() {
+  const [callerName, setCallerName] = useState<string | null>(null);
+  const [entryOpen, setEntryOpen] = useState(true);
+
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<number | null>(null);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [bannerVisible, setBannerVisible] = useState(false);
+  const alertFiredRef = useRef(false);
+  const bannerTimeoutRef = useRef<number | null>(null);
+  const callIdRef = useRef<string>("");
+  const lastPostedLinesRef = useRef(0);
+
+  // Restore name from session (browser session only, no backend persistence)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = window.sessionStorage.getItem(SESSION_NAME_KEY);
+    if (saved) {
+      setCallerName(saved);
+      setEntryOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (recording) {
@@ -36,13 +69,41 @@ function DemoPage() {
     };
   }, [recording]);
 
+  useEffect(() => {
+    return () => {
+      if (bannerTimeoutRef.current) window.clearTimeout(bannerTimeoutRef.current);
+    };
+  }, []);
+
+  const handleStartFromDialog = (name: string) => {
+    setCallerName(name);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(SESSION_NAME_KEY, name);
+    }
+    setEntryOpen(false);
+  };
+
   const start = () => {
     setElapsed(0);
     setRecording(true);
+    // reset per-call alert state
+    alertFiredRef.current = false;
+    setAlertOpen(false);
+    setBannerVisible(false);
+    if (bannerTimeoutRef.current) window.clearTimeout(bannerTimeoutRef.current);
+    callIdRef.current =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `call_${Date.now()}`;
+    lastPostedLinesRef.current = 0;
   };
   const stop = () => {
     setRecording(false);
     setElapsed(0);
+    alertFiredRef.current = false;
+    setAlertOpen(false);
+    setBannerVisible(false);
+    if (bannerTimeoutRef.current) window.clearTimeout(bannerTimeoutRef.current);
   };
 
   // Derived: which transcript lines are visible so far
@@ -57,8 +118,75 @@ function DemoPage() {
   const risk = ramp(RISK_TARGET);
   const confidence = ramp(CONFIDENCE_TARGET);
 
+  // Fire local alert popup + in-phone banner once when risk crosses threshold
+  useEffect(() => {
+    if (!recording) return;
+    if (alertFiredRef.current) return;
+    if (risk >= RISK_ALERT_THRESHOLD) {
+      alertFiredRef.current = true;
+      setAlertOpen(true);
+      setBannerVisible(true);
+      bannerTimeoutRef.current = window.setTimeout(() => setBannerVisible(false), 5000);
+    }
+  }, [risk, recording]);
+
+  // Push transcript chunks to the analyze endpoint (which handles real alert dispatch).
+  useEffect(() => {
+    if (!recording) return;
+    if (visibleTranscript.length === lastPostedLinesRef.current) return;
+    lastPostedLinesRef.current = visibleTranscript.length;
+    const transcript = visibleTranscript.map((l) => `${l.speaker}: ${l.text}`).join("\n");
+    // Fire and forget; backend runs its own alert dispatch independently.
+    void fetch(ANALYZE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        transcript,
+        phone_number: "+919876543210",
+        call_id: callIdRef.current,
+        elapsed_seconds: elapsed,
+        family_contact_number: TRUSTED_CONTACT_E164,
+        alert_language: "en",
+      }),
+    }).catch(() => {
+      /* ignore network errors — UI simulation is authoritative for display */
+    });
+  }, [visibleTranscript.length, recording, elapsed]);
+
+  const displayName = callerName ?? "Ravi Sinha";
+  const initials = callerName ? computeInitials(callerName) : "RS";
+
+  const phoneNotification = bannerVisible ? (
+    <div
+      role="alert"
+      className="flex items-start gap-2 rounded-2xl bg-neutral-900/95 px-3 py-2.5 text-white shadow-lg backdrop-blur-sm"
+    >
+      <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md bg-danger/20 text-danger">
+        <AlertTriangle className="h-3.5 w-3.5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">SentryCall</p>
+        <p className="truncate text-[12px] font-semibold leading-tight">⚠ Potential Scam Call Detected</p>
+      </div>
+      <button
+        aria-label="Dismiss"
+        onClick={() => setBannerVisible(false)}
+        className="ml-1 rounded-md p-0.5 text-white/60 transition hover:bg-white/10 hover:text-white"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  ) : null;
+
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-16 pt-10">
+    <div className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6">
+      <DemoEntryDialog open={entryOpen} onStart={handleStartFromDialog} />
+      <ScamAlertDialog
+        open={alertOpen}
+        onDismiss={() => setAlertOpen(false)}
+        trustedContact={TRUSTED_CONTACT_DISPLAY}
+      />
+
       {/* Header */}
       <div className="mb-8 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
         <div>
@@ -83,8 +211,8 @@ function DemoPage() {
         <div>
           <PhoneMockup>
             <IncomingCallScreen
-              initials="RS"
-              name="Ravi Sinha"
+              initials={initials}
+              name={displayName}
               number="+91 98765 43210"
               location="Lucknow, Uttar Pradesh"
               carrier="Jio True 5G"
@@ -92,6 +220,7 @@ function DemoPage() {
               onDecline={stop}
               recording={recording}
               onStop={stop}
+              notification={phoneNotification}
             />
           </PhoneMockup>
           <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
@@ -99,6 +228,7 @@ function DemoPage() {
             Your number is not visible to the caller.
           </p>
         </div>
+
 
         {/* Right — panels */}
         <div className="grid gap-6 md:grid-cols-2">
