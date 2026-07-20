@@ -103,11 +103,10 @@ function Home() {
               </span>
               <div>
                 <p className="text-lg font-bold tracking-tight">Built for India.</p>
-                <p className="text-lg font-bold tracking-tight">Protecting millions.</p>
               </div>
             </div>
             <p className="max-w-xl text-sm leading-relaxed text-muted-foreground lg:ml-6">
-              SentryCall is designed to understand the way scammers speak. Because every voice tells a story. We just know the risky ones.
+              Most fraud detection is trained on a global average and never quite fits any one place. Eavesdrop went the other way, starting with the scam calls that actually happen here, the scripts, the pressure, the fake urgency, and building outward from there. It currently understands English, with more languages coming as it develops.
             </p>
           </div>
         </div>
