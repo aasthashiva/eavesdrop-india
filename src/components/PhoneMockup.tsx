@@ -52,7 +52,9 @@ interface IncomingCallScreenProps {
   onDecline?: () => void;
   recording?: boolean;
   onStop?: () => void;
+  notification?: ReactNode;
 }
+
 
 export function IncomingCallScreen({
   initials,
@@ -64,10 +66,17 @@ export function IncomingCallScreen({
   onDecline,
   recording,
   onStop,
+  notification,
 }: IncomingCallScreenProps) {
   return (
-    <div className="flex h-full w-full flex-col px-6 pb-8 pt-14">
+    <div className="relative flex h-full w-full flex-col px-6 pb-8 pt-14">
+      {notification && (
+        <div className="pointer-events-none absolute inset-x-3 top-12 z-30 flex justify-center">
+          <div className="pointer-events-auto w-full">{notification}</div>
+        </div>
+      )}
       <p className="mt-2 text-center text-[13px] font-medium text-neutral-500">Incoming Call</p>
+
 
       <div className="mt-6 flex flex-1 flex-col items-center">
         <div className="grid h-24 w-24 place-items-center rounded-full bg-neutral-200 text-2xl font-semibold text-neutral-700">
