@@ -15,32 +15,32 @@ const STEPS = [
   {
     n: 1,
     icon: PhoneIncoming,
-    title: "Call Received",
-    body: "As soon as an unknown or suspicious call arrives, SentryCall silently activates in the background — no user action required.",
+    title: "Play Both Sides",
+    body: "This demo puts you on both ends of the call. First, you set it up as the person receiving it: enter your name and a trusted contact who'd be alerted if things went wrong (for this prototype, that contact is fixed to a demo number). Then you switch sides. Hit accept, and speak as the scammer, however you like. Keep it casual, or go all in: a fake bank officer, an urgent OTP request, threats about a frozen account. SentryCall reacts to whatever you say, in real time.",
   },
   {
     n: 2,
     icon: AudioLines,
     title: "Real-Time Transcription",
-    body: "Voice is converted to text on-device using our multilingual speech engine, tuned for Indian accents and regional languages.",
+    body: "As soon as you start talking, your words show up as text on screen, live. There's no delay, no waiting for the call to end. This is the same transcription pipeline that would run on a real incoming call, just pointed at your voice instead.",
   },
   {
     n: 3,
     icon: Brain,
     title: "AI Threat Analysis",
-    body: "Multiple specialized agents scan the transcript in parallel for fraud intent, OTP requests, urgency tactics, and impersonation patterns.",
+    body: "Behind the scenes, six agents are working on your transcript at once, each one watching for something different. The Transcript Agent tracks what's being said as it comes in. Pattern Detection looks for known scam scripts and pressure tactics. Reputation Check flags anything suspicious about the caller's number. Verification cross-checks claims made during the call against known facts. The Decision Engine pulls all of that together into a single judgment, and the Response Generator decides what you should see next. All six run in parallel, so nothing is sitting in a queue waiting its turn.",
   },
   {
     n: 4,
     icon: Gauge,
     title: "Risk Scoring",
-    body: "Signals are fused into a live risk score and confidence value that update every few seconds as the conversation unfolds.",
+    body: "Every few seconds, those six signals get boiled down into two numbers you can actually read at a glance: a Risk Score and a Confidence level, both out of 100. Say something harmless, and the numbers stay low. Start pushing for an OTP or threatening a frozen account, and watch them climb.",
   },
   {
     n: 5,
     icon: BellRing,
     title: "Alert & Protection",
-    body: "If risk crosses a critical threshold, SentryCall warns you instantly and logs the call for review — before any damage is done.",
+    body: "Cross a critical risk level, and you'll see a warning appear on screen immediately, no waiting around. At the same time, a real WhatsApp message goes out to your trusted contact, telling them something's wrong. Right now that contact is a fixed demo number, but the alert itself isn't a mockup. It's the same message a real trusted contact would get.",
   },
 ];
 
@@ -52,10 +52,10 @@ function HowItWorks() {
           How It Works
         </span>
         <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
-          Five steps from ring<br />to real protection.
+          We could just tell you to trust us. <br />We'd rather show you.
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          SentryCall works quietly behind the scenes — turning every incoming call into a stream of signals that our AI evaluates in real time.
+          Here's what "AI detects scams" actually means.
         </p>
       </div>
 
