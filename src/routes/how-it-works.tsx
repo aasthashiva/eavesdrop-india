@@ -4,8 +4,7 @@ import { PhoneIncoming, AudioLines, Brain, Gauge, BellRing } from "lucide-react"
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
     meta: [
-      { title: "How It Works — SentryCall" },
-      { name: "description", content: "Learn how SentryCall detects and stops scam calls in real time." },
+      { title: "How It Works — Eavesdrop" },
     ],
   }),
   component: HowItWorks,
@@ -16,7 +15,7 @@ const STEPS = [
     n: 1,
     icon: PhoneIncoming,
     title: "Play Both Sides",
-    body: "This demo puts you on both ends of the call. First, you set it up as the person receiving it: enter your name and a trusted contact who'd be alerted if things went wrong (for this prototype, that contact is fixed to a demo number). Then you switch sides. Hit accept, and speak as the scammer, however you like. Keep it casual, or go all in: a fake bank officer, an urgent OTP request, threats about a frozen account. SentryCall reacts to whatever you say, in real time.",
+    body: "This demo puts you on both ends of the call. First, you set it up as the person receiving it: enter your name and a trusted contact who'd be alerted if things went wrong (for this prototype, that contact is fixed to a demo number). Then you switch sides. Hit accept, and speak as the scammer, however you like. Keep it casual, or go all in: a fake bank officer, an urgent OTP request, threats about a frozen account. Eavesdrop reacts to whatever you say, in real time.",
   },
   {
     n: 2,
