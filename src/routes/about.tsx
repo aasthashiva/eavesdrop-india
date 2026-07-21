@@ -4,8 +4,8 @@ import { Github, ShieldCheck } from "lucide-react";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us — SentryCall" },
-      { name: "description", content: "Meet the team building SentryCall — AI-powered protection against phone scams." },
+      { title: "About Us — Eavesdrop" },
+      { name: "description", content: "Meet the team building Eavesdrop!" },
     ],
   }),
   component: About,
@@ -15,15 +15,15 @@ const TEAM = [
   {
     initials: "HM",
     name: "Harsh Mishra",
-    role: "Co-founder & Engineering",
-    bio: "Full-stack engineer who architected SentryCall's on-device voice pipeline and real-time agent orchestration.",
+    role: "Developer, Backend & Agents",
+    bio: "Led backend architecture and API development, while co-building the multi-agent system powering EavesDrop’s real-time call analysis.",
     color: "bg-primary/10 text-primary",
   },
   {
     initials: "AU",
     name: "Aastha Upadhyay",
-    role: "Co-founder & AI/ML",
-    bio: "AI researcher focused on multilingual speech intelligence and fraud pattern detection for Indian scam calls.",
+    role: "Developer, Frontend & Systems",
+    bio: "Led frontend and UI/UX, while co-building system architecture and contributing across agent orchestration, backend development, and debugging.",
     color: "bg-success/15 text-success",
   },
 ];
@@ -40,7 +40,7 @@ function About() {
           A small team.<br />A big mission.
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          We're building SentryCall to protect millions of Indians from a growing wave of voice-based fraud — combining real-time AI with a deep understanding of how scammers actually speak.
+          Scams rarely begin with an obvious threat. They begin with a conversation. Eavesdrop is being built to understand those conversations, recognize the patterns of manipulation, and help people see what may otherwise go unnoticed.
         </p>
       </div>
 
@@ -71,10 +71,10 @@ function About() {
           <ShieldCheck className="h-6 w-6" />
         </span>
         <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
-          SentryCall is open in spirit — we share our progress, learnings, and select components with the community.
+          Explore the work, the thinking, and the code behind Eavesdrop.
         </p>
         <a
-          href="https://github.com/sentrycall"
+          href="https://github.com/aasthashiva/eavesdrop-india"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
           <Github className="h-4 w-4" />
