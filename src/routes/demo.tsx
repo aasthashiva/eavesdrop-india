@@ -319,7 +319,42 @@ const stopLiveTest = () => {
       {mode === "scripted" ? (
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
           {/* Left — phone */}
-          ...saara scripted content jaisa tha waisa hi rehne de...
+          <div>
+            <PhoneMockup>
+              <IncomingCallScreen
+                initials={initials}
+                name={displayName}
+                number="+91 98765 43210"
+                location="Lucknow, Uttar Pradesh"
+                carrier="Jio True 5G"
+                onAccept={start}
+                onDecline={stop}
+                recording={recording}
+                onStop={stop}
+                notification={phoneNotification}
+              />
+            </PhoneMockup>
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" />
+              Your number is not visible to the caller.
+            </p>
+          </div>
+
+          {/* Right — panels */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <TranscriptPanel
+              lines={visibleTranscript}
+              recording={recording}
+              elapsed={elapsed}
+              onStop={stop}
+            />
+            <RiskPanel risk={risk} />
+            <ConfidencePanel confidence={confidence} />
+            <ThreatPanel threats={visibleThreats} />
+            <div className="md:col-span-2">
+              <AgentPanel elapsed={elapsed} recording={recording} />
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
@@ -368,24 +403,6 @@ const stopLiveTest = () => {
           </div>
         </div>
       )}
-
-
-        {/* Right — panels */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <TranscriptPanel
-            lines={visibleTranscript}
-            recording={recording}
-            elapsed={elapsed}
-            onStop={stop}
-          />
-          <RiskPanel risk={risk} />
-          <ConfidencePanel confidence={confidence} />
-          <ThreatPanel threats={visibleThreats} />
-          <div className="md:col-span-2">
-            <AgentPanel elapsed={elapsed} recording={recording} />
-          </div>
-        </div>
-      </div>
 
       {/* Bottom status */}
       <div className="mt-10 rounded-2xl border border-border bg-card p-6">
