@@ -57,7 +57,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SentryCall — AI-Powered Call Scam Detection" },
+      { title: "EavesDrop — Built to Protect, Not to Pry" },
       { name: "description", content: "EavesDrop is a prototype that analyzes simulated phone calls in real time using six parallel AI agents to detect scam patterns and alert a trusted contact when risk is high." },
       { property: "og:title", content: "EavesDrop — Built to Protect, Not to Pry." },
       { property: "og:description", content: "A working prototype: real-time scam call detection using six parallel AI agents. Try the live demo to see how it responds." },
