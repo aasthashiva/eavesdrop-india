@@ -1,3 +1,4 @@
+import { Mic, MicOff } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Info, ShieldCheck, Lock, AlertTriangle, CheckCircle2, X } from "lucide-react";
@@ -49,6 +50,19 @@ function DemoPage() {
   const bannerTimeoutRef = useRef<number | null>(null);
   const callIdRef = useRef<string>("");
   const lastPostedLinesRef = useRef(0);
+
+  const [mode, setMode] = useState<"scripted" | "live">("scripted");
+
+// --- Live mode state ---
+const [isListening, setIsListening] = useState(false);
+const [liveLines, setLiveLines] = useState<{ text: string; at: number }[]>([]);
+const [liveRisk, setLiveRisk] = useState(0);
+const [liveFlags, setLiveFlags] = useState<string[]>([]);
+const [liveVerification, setLiveVerification] = useState("");
+const recognitionRef = useRef<any>(null);
+const liveTranscriptRef = useRef<string>("");
+const liveCallIdRef = useRef<string>("");
+const liveStartTimeRef = useRef<number>(0);
 
   // Restore name from session (browser session only, no backend persistence)
   useEffect(() => {
@@ -104,7 +118,86 @@ function DemoPage() {
     setAlertOpen(false);
     setBannerVisible(false);
     if (bannerTimeoutRef.current) window.clearTimeout(bannerTimeoutRef.current);
+    
   };
+  const startLiveTest = () => {
+  const SpeechRecognition =
+    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+    return;
+  }
+
+  setLiveLines([]);
+  setLiveRisk(0);
+  setLiveFlags([]);
+  setLiveVerification("");
+  liveTranscriptRef.current = "";
+  liveStartTimeRef.current = Date.now();
+  liveCallIdRef.current =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `live_${Date.now()}`;
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.lang = "en-IN"; // change to "hi-IN" for Hindi
+
+  recognition.onresult = (event: any) => {
+    const latestResult = event.results[event.results.length - 1];
+    const text = latestResult[0].transcript.trim();
+    if (!text) return;
+
+    const at = Math.floor((Date.now() - liveStartTimeRef.current) / 1000);
+    setLiveLines((prev) => [...prev, { text, at }]);
+
+    liveTranscriptRef.current += (liveTranscriptRef.current ? "\n" : "") + `Caller: ${text}`;
+
+    void fetch(ANALYZE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        transcript: liveTranscriptRef.current,
+        phone_number: "+919876543210",
+        call_id: liveCallIdRef.current,
+        elapsed_seconds: at,
+        family_contact_number: TRUSTED_CONTACT_E164,
+        alert_language: "en",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setLiveRisk(data.risk_score ?? 0);
+        setLiveFlags(data.flags_found ?? []);
+        setLiveVerification(data.verification_result ?? "");
+      })
+      .catch(() => {
+        /* network error — ignore, keep listening */
+      });
+  };
+
+  recognition.onerror = (event: any) => {
+    console.error("Speech recognition error:", event.error);
+  };
+
+  recognition.onend = () => {
+    if (isListening) recognition.start(); // auto-restart if still "listening"
+  };
+
+  recognitionRef.current = recognition;
+  recognition.start();
+  setIsListening(true);
+};
+
+const stopLiveTest = () => {
+  setIsListening(false);
+  if (recognitionRef.current) {
+    recognitionRef.current.onend = null; // prevent auto-restart
+    recognitionRef.current.stop();
+  }
+};
 
   // Derived: which transcript lines are visible so far
   const visibleTranscript = recording
@@ -204,30 +297,77 @@ function DemoPage() {
           Tip: Speak naturally. The system is analyzing in real-time.
         </div>
       </div>
-
+    <div className="mb-6 flex gap-2">
+  <button
+    onClick={() => setMode("scripted")}
+    className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+      mode === "scripted" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+    }`}
+  >
+    Scripted Demo
+  </button>
+  <button
+    onClick={() => setMode("live")}
+    className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+      mode === "live" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+    }`}
+  >
+    Live Test (Real Mic)
+  </button>
+</div> 
       {/* Main grid */}
-      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        {/* Left — phone */}
-        <div>
-          <PhoneMockup>
-            <IncomingCallScreen
-              initials={initials}
-              name={displayName}
-              number="+91 98765 43210"
-              location="Lucknow, Uttar Pradesh"
-              carrier="Jio True 5G"
-              onAccept={start}
-              onDecline={stop}
-              recording={recording}
-              onStop={stop}
-              notification={phoneNotification}
-            />
-          </PhoneMockup>
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-            <Lock className="h-3.5 w-3.5" />
-            Your number is not visible to the caller.
-          </p>
+      {mode === "scripted" ? (
+        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+          {/* Left — phone */}
+          ...saara scripted content jaisa tha waisa hi rehne de...
         </div>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+          <Card>
+            <h3 className="mb-4 text-base font-bold text-center">Live Mic Test</h3>
+            <div className="flex flex-col items-center gap-4">
+              <button
+                onClick={isListening ? stopLiveTest : startLiveTest}
+                className={`grid h-20 w-20 place-items-center rounded-full ${
+                  isListening ? "bg-danger text-danger-foreground pulse-dot" : "bg-primary text-primary-foreground"
+                }`}
+              >
+                {isListening ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
+              </button>
+              <p className="text-xs text-muted-foreground">
+                {isListening ? "Listening... speak now" : "Tap to start speaking"}
+              </p>
+            </div>
+          </Card>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="md:col-span-2">
+              <h3 className="text-base font-bold">Live Transcript</h3>
+              <div className="mt-4 min-h-[120px] space-y-3">
+                {liveLines.length === 0 && (
+                  <p className="text-sm text-muted-foreground">Tap the mic and start speaking.</p>
+                )}
+                {liveLines.map((l, i) => (
+                  <div key={i} className="rounded-xl bg-muted/60 p-3">
+                    <span className="text-[11px] text-muted-foreground">{fmtTime(l.at)}</span>
+                    <p className="text-sm">{l.text}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            <RiskPanel risk={liveRisk} />
+            <Card>
+              <h3 className="text-base font-bold">Verification</h3>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {liveVerification || "Waiting for analysis..."}
+              </p>
+            </Card>
+            <div className="md:col-span-2">
+              <ThreatPanel threats={liveFlags.map((f) => ({ at: 0, label: f, level: "detected" as const }))} />
+            </div>
+          </div>
+        </div>
+      )}
 
 
         {/* Right — panels */}
