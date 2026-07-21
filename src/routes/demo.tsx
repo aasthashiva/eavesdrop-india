@@ -1,4 +1,3 @@
-import { Mic, MicOff } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Info, ShieldCheck, Lock, AlertTriangle, CheckCircle2, X } from "lucide-react";
@@ -133,6 +132,9 @@ const liveStartTimeRef = useRef<number>(0);
   setLiveRisk(0);
   setLiveFlags([]);
   setLiveVerification("");
+  alertFiredRef.current = false;
+  setAlertOpen(false);
+  setBannerVisible(false);
   liveTranscriptRef.current = "";
   liveStartTimeRef.current = Date.now();
   liveCallIdRef.current =
@@ -222,6 +224,17 @@ const stopLiveTest = () => {
       bannerTimeoutRef.current = window.setTimeout(() => setBannerVisible(false), 5000);
     }
   }, [risk, recording]);
+  // Fire local alert popup + in-phone banner once when LIVE risk crosses threshold
+  useEffect(() => {
+    if (!isListening) return;
+    if (alertFiredRef.current) return;
+    if (liveRisk >= RISK_ALERT_THRESHOLD) {
+      alertFiredRef.current = true;
+      setAlertOpen(true);
+      setBannerVisible(true);
+      bannerTimeoutRef.current = window.setTimeout(() => setBannerVisible(false), 5000);
+    }
+  }, [liveRisk, isListening]);
 
   // Push transcript chunks to the analyze endpoint (which handles real alert dispatch).
   useEffect(() => {
@@ -358,32 +371,41 @@ const stopLiveTest = () => {
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          <Card>
-            <h3 className="mb-4 text-base font-bold text-center">Live Mic Test</h3>
-            <div className="flex flex-col items-center gap-4">
-              <button
-                onClick={isListening ? stopLiveTest : startLiveTest}
-                className={`grid h-20 w-20 place-items-center rounded-full ${
-                  isListening ? "bg-danger text-danger-foreground pulse-dot" : "bg-primary text-primary-foreground"
-                }`}
-              >
-                {isListening ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
-              </button>
-              <p className="text-xs text-muted-foreground">
-                {isListening ? "Listening... speak now" : "Tap to start speaking"}
-              </p>
-            </div>
-          </Card>
+          {/* Left — phone (live mic wired to Accept/Decline) */}
+          <div>
+            <PhoneMockup>
+              <IncomingCallScreen
+                initials={initials}
+                name={displayName}
+                number="+91 98765 43210"
+                location="Lucknow, Uttar Pradesh"
+                carrier="Jio True 5G"
+                onAccept={startLiveTest}
+                onDecline={stopLiveTest}
+                recording={isListening}
+                onStop={stopLiveTest}
+                notification={phoneNotification}
+              />
+            </PhoneMockup>
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" />
+              Your number is not visible to the caller.
+            </p>
+          </div>
 
+          {/* Right — panels */}
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="md:col-span-2">
               <h3 className="text-base font-bold">Live Transcript</h3>
+              <p className="text-xs text-muted-foreground">Real-time speech to text</p>
               <div className="mt-4 min-h-[120px] space-y-3">
                 {liveLines.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Tap the mic and start speaking.</p>
+                  <div className="grid min-h-[160px] place-items-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
+                    Press the call button to begin.
+                  </div>
                 )}
                 {liveLines.map((l, i) => (
-                  <div key={i} className="rounded-xl bg-muted/60 p-3">
+                  <div key={i} className="animate-fade-in-up rounded-xl bg-muted/60 p-3">
                     <span className="text-[11px] text-muted-foreground">{fmtTime(l.at)}</span>
                     <p className="text-sm">{l.text}</p>
                   </div>
