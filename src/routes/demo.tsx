@@ -62,6 +62,9 @@ const recognitionRef = useRef<any>(null);
 const liveTranscriptRef = useRef<string>("");
 const liveCallIdRef = useRef<string>("");
 const liveStartTimeRef = useRef<number>(0);
+// ↓↓↓ YAHAN NAYA ADD KAR ↓↓↓
+const [displayRisk, setDisplayRisk] = useState(0);
+// ↑↑↑ YAHAN TAK ↑↑↑
 
   // Restore name from session (browser session only, no backend persistence)
   useEffect(() => {
@@ -235,6 +238,19 @@ const stopLiveTest = () => {
       bannerTimeoutRef.current = window.setTimeout(() => setBannerVisible(false), 5000);
     }
   }, [liveRisk, isListening]);
+  // ↓↓↓ YAHAN NAYA ADD KAR ↓↓↓
+  useEffect(() => {
+    if (displayRisk === liveRisk) return;
+    const id = requestAnimationFrame(() => {
+      setDisplayRisk((prev) => {
+        const diff = liveRisk - prev;
+        if (Math.abs(diff) < 1) return liveRisk;
+        return prev + diff * 0.15;
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [liveRisk, displayRisk]);
+  // ↑↑↑ YAHAN TAK ↑↑↑
 
   // Push transcript chunks to the analyze endpoint (which handles real alert dispatch).
   useEffect(() => {
@@ -412,7 +428,7 @@ const stopLiveTest = () => {
                 ))}
               </div>
             </Card>
-            <RiskPanel risk={liveRisk} />
+            <RiskPanel risk={Math.round(displayRisk)} />
             <Card>
               <h3 className="text-base font-bold">Verification</h3>
               <p className="mt-3 text-sm text-muted-foreground">
