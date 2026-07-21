@@ -422,6 +422,12 @@ const stopLiveTest = () => {
             <div className="md:col-span-2">
               <ThreatPanel threats={liveFlags.map((f) => ({ at: 0, label: f, level: "detected" as const }))} />
             </div>
+            <div className="md:col-span-2">
+              <AgentPanel
+                elapsed={liveLines.length > 0 ? liveLines[liveLines.length - 1].at : 0}
+                recording={isListening}
+              />
+            </div>
           </div>
         </div>
       )}
