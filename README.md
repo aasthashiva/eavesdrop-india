@@ -7,7 +7,7 @@
 **Status: Deployed** — Backend live on Render, frontend live on Vercel, WhatsApp alerts dispatched via Twilio. Telecom-level call interception not yet integrated — the current Live Test Mode captures audio through the device microphone.
 
 **Live Backend:** https://eavesdrop-backend.onrender.com
-**Live Website:** eavesdrop-india.vercel.app
+**Live Website:** https://eavesdrop-india.vercel.app
 
 ---
 
