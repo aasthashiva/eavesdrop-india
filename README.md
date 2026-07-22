@@ -107,9 +107,7 @@ Two channels fire simultaneously on High-Risk classification:
 <img width="2372" height="1550" alt="image" src="https://github.com/user-attachments/assets/d81ccc9c-c119-4bd9-bf5d-aa4066446a92" />
 
 ### Family Alert — Delivered
-<img width="1066" height="825" alt="image" src="https://github.com/user-attachments/assets/fb778d36-9583-471c-aa72-f5836e3893c9" />
-<img width="1080" height="630" alt="image" src="https://github.com/user-attachments/assets/f7c4b853-fe23-4b8a-9f4a-c591692a00ab" />
-
+<img width="1051" height="807" alt="image" src="https://github.com/user-attachments/assets/42814ec7-6601-4c6e-8631-ae2c484141bb" />
 
 ---
 
