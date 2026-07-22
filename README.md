@@ -2,8 +2,6 @@
 
 ### Real-time conversational risk detection for voice-based fraud.
 
-> Six specialized agents analyzing a live call. A family alerted before the money moves.
-
 **Status: Deployed** — Backend live on Render, frontend live on Vercel, WhatsApp alerts dispatched via Twilio. Telecom-level call interception not yet integrated — the current Live Test Mode captures audio through the device microphone.
 
 **Live Backend:** https://eavesdrop-backend.onrender.com
