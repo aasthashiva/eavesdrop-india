@@ -111,6 +111,12 @@ Two channels fire simultaneously on High-Risk classification:
 
 ---
 
+## Backend Repository
+
+https://github.com/HarshMishra1412/scamshield-backend
+
+---
+
 ## Project Structure
 
 ```
